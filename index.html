@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Work Hours Calculator</title>
     
-    <!-- PWA Manifest and Theme Color -->
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#4f46e5">
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -120,7 +119,6 @@
         </div>
     </div>
 
-    <!-- Edit Modal -->
     <div v-if="isEditModalOpen" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50" @click.self="closeEditModal">
         <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
             <h2 class="text-2xl font-bold mb-6 text-gray-700">Edit Work Entry</h2>
@@ -252,11 +250,11 @@
             };
 
             const calculateDuration = (entry) => {
+                if (!entry.startTime || !entry.endTime) return { totalMinutes: 0 };
                 const start = new Date(`${entry.date}T${entry.startTime}`);
                 const end = new Date(`${entry.date}T${entry.endTime}`);
                 if (end < start) end.setDate(end.getDate() + 1);
-                const diffMs = end - start;
-                return { totalMinutes: isNaN(diffMs) ? 0 : Math.floor(diffMs / 60000) };
+                return { totalMinutes: isNaN(end - start) ? 0 : Math.floor((end - start) / 60000) };
             };
             
             const formatDuration = ({ totalMinutes }) => {
@@ -298,6 +296,7 @@
         }
     }).mount('#app');
 
+    // Register the Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js')
